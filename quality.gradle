@@ -1,0 +1,70 @@
+apply plugin: 'jacoco'
+
+
+jacoco {
+    toolVersion = "0.7.7.201606060606"
+}
+
+def fileFilter = [
+        'com/androidjacoco/sample/**/view/**.*',
+        '**/R.class', '**/R$*.class', '**/BuildConfig.*',
+        '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+def mainSrc = "${project.projectDir}/src/main/java"
+
+
+task customJacocoTestReport(type: JacocoReport, dependsOn: 'test') {
+
+    reports {
+        html.enabled = true
+        html.destination = "${buildDir}/reports/jacoco"
+    }
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+}
+
+task customJacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'JacocoTestReport') {
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+
+
+    violationRules {
+        setFailOnViolation(true)
+
+        rule {
+            element = 'PACKAGE'
+
+            limit {
+                value = 'COVEREDRATIO'
+                counter = 'BRANCH'
+                minimum = 0.5
+            }
+        }
+
+        rule {
+            element = 'PACKAGE'
+
+            limit {
+                value = 'COVEREDRATIO'
+                counter = 'INSTRUCTION'
+                minimum = 0.6
+            }
+        }
+
+        rule {
+            element = 'PACKAGE'
+            includes = ['com.androidjacoco.sample.*.presenter']
+            enabled = true
+
+            limit {
+                counter = 'CLASS'
+                value = 'MISSEDCOUNT'
+                maximum = 0
+            }
+        }
+    }
+}
