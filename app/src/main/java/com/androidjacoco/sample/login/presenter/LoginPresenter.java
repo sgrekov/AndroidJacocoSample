@@ -1,26 +1,29 @@
 package com.androidjacoco.sample.login.presenter;
 
-import com.androidjacoco.sample.login.ILoginService;
+import com.androidjacoco.sample.login.data.ILoginService;
 import com.androidjacoco.sample.login.view.ILoginView;
-import com.jakewharton.rxbinding2.InitialValueObservable;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.SingleObserver;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class LoginPresenter {
     private final ILoginView loginView;
     private final ILoginService loginService;
+    private final Scheduler scheduler;
 
-    public LoginPresenter(ILoginView loginView, ILoginService loginService) {
+    public LoginPresenter(ILoginView loginView, ILoginService loginService, Scheduler scheduler) {
         this.loginView = loginView;
         this.loginService = loginService;
+        this.scheduler = scheduler;
     }
 
 
     public void loginBtnClick() {
         if (loginService == null) {
             loginView.error("Something wrong happened!");
+            return;
         }
 
         final String login = loginView.getLogin();
@@ -35,7 +38,7 @@ public class LoginPresenter {
         }
 
         loginService.login()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(scheduler)
                 .subscribe(new SingleObserver<Boolean>() {
 
                     @Override
@@ -46,10 +49,15 @@ public class LoginPresenter {
                     }
 
                     @Override
-                    public void onSuccess(Boolean aBoolean) {
-                        loginView.hideProgress();
-                        loginView.onLoginSuccess();
-                        loginView.goToMainScreen(loginView.getLogin());
+                    public void onSuccess(Boolean logged) {
+                        if (logged) {
+                            loginView.hideProgress();
+                            loginView.onLoginSuccess();
+                            loginView.goToMainScreen(loginView.getLogin());
+                        } else {
+                            loginView.hideProgress();
+                            loginView.error("Wrong login or password!");
+                        }
                     }
 
                     @Override
@@ -69,7 +77,7 @@ public class LoginPresenter {
         return !(login == null || login.length() <= 3 || login.length() > 15);
     }
 
-    public void addLoginInput(InitialValueObservable<CharSequence> logintextViewText) {
+    public void addLoginInput(Observable<CharSequence> logintextViewText) {
         logintextViewText.subscribe(new Consumer<CharSequence>() {
             @Override
             public void accept(CharSequence login) throws Exception {
@@ -92,7 +100,7 @@ public class LoginPresenter {
         });
     }
 
-    public void addPasswordInput(InitialValueObservable<CharSequence> passValueObservable) {
+    public void addPasswordInput(Observable<CharSequence> passValueObservable) {
         passValueObservable.subscribe(new Consumer<CharSequence>() {
             @Override
             public void accept(CharSequence pass) throws Exception {

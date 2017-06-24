@@ -13,10 +13,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.androidjacoco.sample.R;
-import com.androidjacoco.sample.login.FakeLoginService;
+import com.androidjacoco.sample.login.data.FakeLoginService;
 import com.androidjacoco.sample.login.presenter.LoginPresenter;
 import com.androidjacoco.sample.main.view.MainActivity;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class LoginActivity extends AppCompatActivity implements ILoginView {
@@ -34,7 +35,7 @@ public class LoginActivity extends AppCompatActivity implements ILoginView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_main);
-        presenter = new LoginPresenter(this, new FakeLoginService(Schedulers.io()));
+        presenter = new LoginPresenter(this, new FakeLoginService(Schedulers.io()), AndroidSchedulers.mainThread());
 
         loginInput = (TextInputLayout) findViewById(R.id.login_til);
         loginText = (EditText) findViewById(R.id.login);

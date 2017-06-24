@@ -25,7 +25,7 @@ task customJacocoTestReport(type: JacocoReport, dependsOn: 'test') {
     executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
 }
 
-task customJacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'JacocoTestReport') {
+task customJacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'customJacocoTestReport') {
 
     sourceDirectories = files([mainSrc])
     classDirectories = files([debugTree])
@@ -51,7 +51,7 @@ task customJacocoTestCoverageVerification(type: JacocoCoverageVerification, depe
             limit {
                 value = 'COVEREDRATIO'
                 counter = 'INSTRUCTION'
-                minimum = 0.6
+                minimum = 0.8
             }
         }
 

@@ -1,4 +1,4 @@
-package com.androidjacoco.sample.login;
+package com.androidjacoco.sample.login.data;
 
 import io.reactivex.Single;
 

@@ -1,5 +1,6 @@
-package com.androidjacoco.sample.login;
+package com.androidjacoco.sample.login.data;
 
+import com.androidjacoco.sample.login.data.ILoginService;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 
