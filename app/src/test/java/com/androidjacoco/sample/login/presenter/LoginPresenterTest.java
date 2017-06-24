@@ -1,7 +1,8 @@
 package com.androidjacoco.sample.login.presenter;
 
-import com.androidjacoco.sample.login.ILoginService;
+import com.androidjacoco.sample.login.data.ILoginService;
 import com.androidjacoco.sample.login.view.ILoginView;
+import io.reactivex.schedulers.Schedulers;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class LoginPresenterTest {
     public void setUp() {
         view = Mockito.mock(ILoginView.class);
         loginService = Mockito.mock(ILoginService.class);
-        presenter = new LoginPresenter(view, loginService);
+        presenter = new LoginPresenter(view, loginService, Schedulers.trampoline());
     }
 
     @Test
